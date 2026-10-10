@@ -1,0 +1,50 @@
+
+class Solution {
+    public long minSumSquareDiff(int[] nums1, int[] nums2, int k1, int k2) {
+        long k = (long) k1 + k2;
+        int n = nums1.length;
+        int[] diff = new int[n];
+        int max = 0;
+        long sum = 0;
+
+        for (int i = 0; i < n; i++) {
+            diff[i] = Math.abs(nums1[i] - nums2[i]);
+            max = Math.max(max, diff[i]);
+            sum += diff[i];
+        }
+
+        if (k >= sum) return 0L;
+
+        int low = 0, high = max;
+
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            long need = 0;
+
+            for (int d : diff) {
+                if (d > mid) need += d - mid;
+            }
+
+            if (need <= k) high = mid;
+            else low = mid + 1;
+        }
+
+        int limit = low;
+        long used = 0;
+        long answer = 0;
+
+        for (int d : diff) {
+            int reduced = Math.min(d, limit);
+            used += d - reduced;
+            answer += (long) reduced * reduced;
+        }
+
+        long remaining = k - used;
+
+        if (remaining > 0) {
+            answer -= remaining * (2L * limit - 1);
+        }
+
+        return answer;
+    }
+}
